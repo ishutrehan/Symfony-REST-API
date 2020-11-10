@@ -8,8 +8,8 @@
   `parameters are: sender_id, receiver_id, amount` 
  3) Reterive Balance `(GET)`<br>
   `/api/account/balance/{id}`
- 4) Reterive All Customers  <br>
+ 4) Reterive All Customers `(GET)` <br>
   `/api/customers/`
- 5) Transfer History  <br>
+ 5) Transfer History `(GET)` <br>
   `api/account/history/{account_id}`
                                  

@@ -8,4 +8,6 @@
   `parameters are: sender_id, receiver_id, amount` 
  3) Reterive Balance `(GET)`<br>
   `/api/account/balance/{id}`
+ 4) Reterive All Customers  <br>
+  `/api/customers/`
                                  

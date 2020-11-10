@@ -1,24 +1,23 @@
 <?php
 
- namespace App\Controller;
- use App\Entity\Account;
- //use App\Repository\PostRepository;
- use Doctrine\ORM\EntityManagerInterface;
- use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
- use Symfony\Component\HttpFoundation\JsonResponse;
- use Symfony\Component\HttpFoundation\Request;
- use Symfony\Component\Routing\Annotation\Route;
+namespace App\Controller;
+use App\Entity\Account;
+use App\Entity\History;
+//use App\Repository\PostRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
- class AccountController extends AbstractController
- {
+class AccountController extends AbstractController
+{
 
   /**
    * @Route("/api/account/create", name="account_create", methods={"POST"})
    */
   public function createAccount(Request $request, EntityManagerInterface $entityManager) {
-    
     try{
-     
       $request = $this->transformJsonBody($request);
     
       if (!$request || !$request->get('name') || !$request->request->get('email') || !$request->request->get('password') || !$request->request->get('initial_amount')){
@@ -96,6 +95,8 @@
     $receiver_id = $request->get('receiver_id');
     $amount = $request->get('amount');
     $sender = $em->getRepository(Account::class)->find($sender_id);
+
+
     if (!$sender) { 
       throw $this->createNotFoundException( 
          'No sender found for id '.$sender_id 
@@ -113,6 +114,39 @@
     
     $sender->setInitialAmount($remaining_sender_balance);
     $receiver->setInitialAmount($remaining_receiver_balance);
+    $sender_debit_amount = 0;
+    $sender_credit_amount = 0;
+    $receiver_debit_amount = 0;
+    $receiver_credit_amount = 0;
+    $sender_balance_new = $sender->getInitialAmount();
+    if($sender_balance_new < $sender_balance){
+      $sender_debit_amount = $amount;
+    }
+    if($sender_balance_new > $sender_balance){
+      $sender_credit_amount = $amount;
+    }
+    $receiver_balance_new = $receiver->getInitialAmount();
+    if($receiver_balance_new < $receiver_balance){
+      $receiver_debit_amount = $amount;
+    }
+    if($receiver_balance_new > $receiver_balance){
+      $receiver_credit_amount = $amount;
+    }
+    $sender_history = new History();
+    $sender_history->setAccountID($sender_id);
+    $sender_history->setDebitAmount($sender_debit_amount);
+    $sender_history->setCreditAmount($sender_credit_amount);
+    $sender_history->setTotal($sender_balance_new);
+    $sender_history->setDate(new \DateTime());
+
+    $em->persist($sender_history); 
+    $receiver_history = new History();
+    $receiver_history->setAccountID($receiver_id);
+    $receiver_history->setDebitAmount($receiver_debit_amount);
+    $receiver_history->setCreditAmount($receiver_credit_amount);
+    $receiver_history->setTotal($receiver_balance_new);
+    $receiver_history->setDate(new \DateTime());
+    $em->persist($receiver_history); 
     $em->flush(); 
 
     $data = [

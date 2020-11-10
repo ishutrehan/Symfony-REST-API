@@ -1,5 +1,6 @@
 # Symfony-REST-API
-
+- Language: **PHP**
+- Framework: **Symfony**
 1) Create Account `(POST)` <br>
 `/api/account/create` <br>
  `parameters are : name, email, password and initial_amount`

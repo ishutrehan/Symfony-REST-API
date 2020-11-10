@@ -60,6 +60,13 @@
    $this->id = $id;
   }
 
+   /**
+   * @return mixed
+   */
+  public function getAccountID()
+  {
+   return $this->account_id;
+  }
   /**
    * @param mixed $account_id
    */
@@ -69,11 +76,26 @@
   }
   
   /**
+   * @return mixed
+   */
+  public function getDebitAmount()
+  {
+   return $this->debit;
+  }
+  /**
    * @param mixed $debit
    */
   public function setDebitAmount($debit)
   {
    $this->debit = $debit;
+  }
+  
+  /**
+   * @return mixed
+   */
+  public function getCreditAmount()
+  {
+   return $this->credit;
   }
   /**
    * @param mixed $credit
@@ -84,11 +106,25 @@
   }
   
   /**
+   * @return mixed
+   */
+  public function getTotal()
+  {
+   return $this->total;
+  }
+  /**
    * @param mixed $total
    */
   public function setTotal($total)
   {
    $this->total = $total;
+  }
+  /**
+   * @return mixed
+   */
+  public function getDate(): ?\DateTime
+  {
+   return $this->date;
   }
   
   /**

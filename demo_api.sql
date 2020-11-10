@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2020 at 10:28 AM
+-- Generation Time: Nov 10, 2020 at 02:07 PM
 -- Server version: 10.3.16-MariaDB
 -- PHP Version: 7.3.6
 
@@ -42,8 +42,8 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`id`, `name`, `email`, `password`, `initial_amount`, `create_date`) VALUES
-(1, 'test', 'test@gmail.com', '123456', '115', '2020-11-10'),
-(2, 'testuser', 'test123@gmail.com', '123456', '340', '2020-11-10');
+(1, 'test', 'test@gmail.com', '123456', '205', '2020-11-10'),
+(2, 'testuser', 'test123@gmail.com', '123456', '250', '2020-11-10');
 
 -- --------------------------------------------------------
 
@@ -56,6 +56,31 @@ CREATE TABLE `doctrine_migration_versions` (
   `executed_at` datetime DEFAULT NULL,
   `execution_time` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `history`
+--
+
+CREATE TABLE `history` (
+  `id` int(11) NOT NULL,
+  `account_id` text NOT NULL,
+  `debit` text NOT NULL,
+  `credit` text NOT NULL,
+  `total` text NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `history`
+--
+
+INSERT INTO `history` (`id`, `account_id`, `debit`, `credit`, `total`, `date`) VALUES
+(1, '2', '20', '0', '260', '2020-11-10 11:49:29'),
+(2, '1', '0', '20', '195', '2020-11-10 11:49:29'),
+(3, '2', '10', '0', '250', '2020-11-10 12:50:07'),
+(4, '1', '0', '10', '205', '2020-11-10 12:50:07');
 
 --
 -- Indexes for dumped tables
@@ -74,6 +99,12 @@ ALTER TABLE `doctrine_migration_versions`
   ADD PRIMARY KEY (`version`);
 
 --
+-- Indexes for table `history`
+--
+ALTER TABLE `history`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -82,6 +113,12 @@ ALTER TABLE `doctrine_migration_versions`
 --
 ALTER TABLE `account`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `history`
+--
+ALTER TABLE `history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

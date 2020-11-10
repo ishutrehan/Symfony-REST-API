@@ -16,6 +16,7 @@
         try{
             $repository = $this->getDoctrine()->getRepository(History::class);
             $history = $repository->findBy(['account_id' => $account_id]);
+            
             return $this->response(array('history' => $history), 200);
 
         }catch (\Exception $e){

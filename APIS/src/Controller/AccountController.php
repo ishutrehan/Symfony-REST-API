@@ -80,7 +80,7 @@
    * @param PostRepository $postRepository
    * @param $id
    * @return JsonResponse
-   * @Route("/api/amount/transfer", name="amount_transfer", methods={"POST"})
+   * @Route("/api/account/transfer", name="amount_transfer", methods={"POST"})
    */
   public function transferAmount(Request $request){
 

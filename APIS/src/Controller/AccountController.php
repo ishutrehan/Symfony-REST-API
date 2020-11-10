@@ -1,14 +1,6 @@
 <?php
- /**
-  * Created by PhpStorm.
-  * User: hicham benkachoud
-  * Date: 02/01/2020
-  * Time: 22:44
-  */
 
  namespace App\Controller;
-
-
  use App\Entity\Account;
  //use App\Repository\PostRepository;
  use Doctrine\ORM\EntityManagerInterface;
@@ -25,59 +17,62 @@
    */
   public function createAccount(Request $request, EntityManagerInterface $entityManager) {
     
-   try{
+    try{
      
-    $request = $this->transformJsonBody($request);
-   
-    if (!$request || !$request->get('name') || !$request->request->get('email') || !$request->request->get('password') || !$request->request->get('initial_amount')){
-     throw new \Exception();
-    }
-
-    $post = new Account();
-    $post->setName($request->get('name'));
-    $post->setEmail($request->get('email'));
-    $post->setPassword($request->get('password'));
-    $post->setInitialAmount($request->get('initial_amount'));
+      $request = $this->transformJsonBody($request);
     
-    $entityManager->persist($post);
-    $entityManager->flush();
+      if (!$request || !$request->get('name') || !$request->request->get('email') || !$request->request->get('password') || !$request->request->get('initial_amount')){
+        throw new \Exception();
+      }
+      $post = new Account();
+      $post->setName($request->get('name'));
+      $post->setEmail($request->get('email'));
+      $post->setPassword($request->get('password'));
+      $post->setInitialAmount($request->get('initial_amount'));
+      
+      $entityManager->persist($post);
+      $entityManager->flush();
 
-    $data = [
-      'id' => $post->getId(),
-      'success' => "Account created successfully"
-    ];
-    return $this->response($data);
-
-   }
-   catch (\Exception $e){
-    $data = [
-     'status' => 422,
-     'errors' => $e->getMessage(),
-    ];
-    return $this->response($data, 422);
-   }
-
+      $data = [
+        'id' => $post->getId(),
+        'success' => "Account created successfully"
+      ];
+      return $this->response($data);
+    }
+    catch (\Exception $e){
+      $data = [
+      'status' => 422,
+      'errors' => $e->getMessage(),
+      ];
+      return $this->response($data, 422);
+    }
   }
 
-
-  /**
-   * @param PostRepository $postRepository
-   * @param $id
-   * @return JsonResponse
-   * @Route("/posts/{id}", name="posts_get", methods={"GET"})
-   */
-  /*public function getPost(PostRepository $postRepository, $id){
-   $post = $postRepository->find($id);
-
-   if (!$post){
+  /** 
+  * @Route("/api/account/balance/{id}", name="account_balance", methods={"GET"})
+  */
+  public function getBalance($id)
+  {
+    $repository = $this->getDoctrine()->getRepository(Account::class);
+    $account = $repository->find($id);
+    // dynamic method names to find a single product based on a column value
+    $account = $repository->findOneById($id);
     $data = [
-     'status' => 404,
-     'errors' => "Post not found",
+      'balance' => $account->getInitialAmount()
     ];
-    return $this->response($data, 404);
-   }
-   return $this->response($post);
-  }*/
+
+    return $this->response($data, 200);
+  }
+
+  /** 
+   * @Route("/api/customers/") 
+  */ 
+  public function displayAction() { 
+    $customers = $this->getDoctrine() 
+    ->getRepository('App:Account') 
+    ->findAll();
+    return $this->response(array('customers' => $customers), 200);
+  }   
 
   /**
    * @param Request $request
@@ -91,63 +86,50 @@
 
    try{
     $request = $this->transformJsonBody($request);
-   
-    if (!$request || !$request->get('sender') || !$request->request->get('receiver') || !$request->request->get('amount')){
-     throw new \Exception();
+  
+    if (!$request->get('sender_id') || !$request->get('receiver_id') || !$request->get('amount')){
+      throw new \Exception();
     }
+    $em = $this->getDoctrine()->getManager(); 
 
-    $post = new Account();
-    $post->setName($request->get('name'));
-    $post->setEmail($request->get('email'));
-    $post->setPassword($request->get('password'));
-    $post->setInitialAmount($request->get('initial_amount'));
+    $sender_id = $request->get('sender_id');
+    $receiver_id = $request->get('receiver_id');
+    $amount = $request->get('amount');
+    $sender = $em->getRepository(Account::class)->find($sender_id);
+    if (!$sender) { 
+      throw $this->createNotFoundException( 
+         'No sender found for id '.$sender_id 
+      ); 
+    }
     
+    $sender_balance = $sender->getInitialAmount();
+
+    $receiver = $em->getRepository(Account::class)->find($receiver_id);
+    
+    $receiver_balance = $receiver->getInitialAmount();
+
+    $remaining_sender_balance =  $sender_balance - $amount;
+    $remaining_receiver_balance =  $receiver_balance + $amount;
+    
+    $sender->setInitialAmount($remaining_sender_balance);
+    $receiver->setInitialAmount($remaining_receiver_balance);
+    $em->flush(); 
+
     $data = [
      'status' => 200,
-     'errors' => "Amount transfered successfully",
+     'errors' => "Amount transferred successfully.",
     ];
-    return $this->response($data);
+    return $this->response($data, 200);
 
    }catch (\Exception $e){
     $data = [
      'status' => 422,
-     'errors' => "Data no valid",
+     'errors' => $e->getMessage()
     ];
     return $this->response($data, 422);
    }
 
   }
-
-  /**
-   * @param PostRepository $postRepository
-   * @param $id
-   * @return JsonResponse
-   * @Route("/posts/{id}", name="posts_delete", methods={"DELETE"})
-   */
-  /*public function deletePost(EntityManagerInterface $entityManager, PostRepository $postRepository, $id){
-   $post = $postRepository->find($id);
-
-   if (!$post){
-    $data = [
-     'status' => 404,
-     'errors' => "Post not found",
-    ];
-    return $this->response($data, 404);
-   }
-
-   $entityManager->remove($post);
-   $entityManager->flush();
-   $data = [
-    'status' => 200,
-    'errors' => "Post deleted successfully",
-   ];
-   return $this->response($data);
-  }*/
-
-
-
-
-
   /**
    * Returns a JSON response
    *

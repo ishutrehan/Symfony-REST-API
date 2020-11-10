@@ -115,7 +115,6 @@
   {
    $this->initial_amount = $initial_amount;
   }
-
   /**
    * @return mixed
    */
@@ -143,8 +142,6 @@
    $this->create_date = new \DateTime('now', new \DateTimeZone('Africa/Casablanca'));
   }
 
-
-
   /**
    * Specify data which should be serialized to JSON
    * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -156,7 +153,8 @@
   {
    return [
     "name" => $this->getName(),
-    "description" => $this->getDescription()
+    "email" => $this->getEmail(),
+    "initial_amount" => $this->getInitialAmount()
    ];
   }
  }

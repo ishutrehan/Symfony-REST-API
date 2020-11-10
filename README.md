@@ -10,4 +10,6 @@
   `/api/account/balance/{id}`
  4) Reterive All Customers  <br>
   `/api/customers/`
+ 5) Transfer History  <br>
+  `api/account/history/{account_id}`
                                  
